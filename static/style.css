@@ -1,0 +1,179 @@
+/* ---------------------------------------------------- */
+/* 1. Global Reset & Base Styles */
+/* ---------------------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    line-height: 1.6;
+    min-height: 100vh;
+    background-color: #f3f4f6;
+}
+
+/* ---------------------------------------------------- */
+/* 2. Layout Structure (Dashboard Grid) */
+/* ---------------------------------------------------- */
+
+.dashboard-grid {
+    display: flex; /* Default to column layout for mobile */
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Desktop Layout (Large screens and up) */
+@media (min-width: 1024px) {
+    .dashboard-grid {
+        display: grid;
+        /* Sidebar (fixed width) | Main Content (takes remaining space) */
+        grid-template-columns: 300px 1fr; 
+    }
+
+    /* Make the navigation bar sticky in the grid slot */
+    nav {
+        height: 100%;
+        position: sticky;
+        top: 0;
+    }
+}
+
+/* ---------------------------------------------------- */
+/* 3. Navigation Styling */
+/* ---------------------------------------------------- */
+
+.nav-item {
+    width: 64px; /* Fixed width for icon buttons */
+    height: 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    color: white;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.active-nav-item {
+    background-color: #374151 !important; /* Tailwind slate-700 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: scale(1.05);
+}
+
+/* ---------------------------------------------------- */
+/* 4. Component Styling */
+/* ---------------------------------------------------- */
+
+/* Card for main sections (Input, Chat, etc.) */
+.content-card {
+    background-color: white;
+    padding: 1.5rem; /* Equivalent to p-6 */
+    border-radius: 1rem; /* Equivalent to rounded-xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Tailwind shadow-xl */
+}
+
+/* Small cards used in the horizontal analysis scroll */
+.analysis-card {
+    width: 250px; 
+    flex-shrink: 0; /* Prevents the card from shrinking */
+    border-radius: 0.75rem; /* rounded-lg */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow-md */
+    transition: transform 0.2s ease;
+}
+
+.analysis-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* ---------------------------------------------------- */
+/* 5. Character Icon Styling (UPDATED FOR NEW JS) */
+/* ---------------------------------------------------- */
+
+/* Base style for character icon buttons */
+.character-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    border: 2px solid #cbd5e1; /* slate-300 */
+    border-radius: 9999px; /* fully rounded */
+    background-color: white;
+    color: #1e293b; /* slate-800 */
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.character-icon:hover {
+    background-color: #f1f5f9; /* slate-200 */
+    transform: translateY(-2px);
+}
+
+/* Active character icon state */
+.character-icon.bg-blue-600 {
+    background-color: #2563eb !important;
+    color: white !important;
+    border-color: #2563eb !important;
+}
+
+/* Ensure emoji sizing within character icons */
+.character-icon span:first-child {
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-right: 0.5rem;
+}
+
+/* ---------------------------------------------------- */
+/* 6. Utility Styles */
+/* ---------------------------------------------------- */
+
+/* Custom height for the chat window, necessary for auto-scroll to work */
+.chat-area-height {
+    height: 60vh; /* 60% of viewport height */
+    max-height: 700px;
+    border-radius: 1rem;
+}
+
+/* Chart container ensures the canvas scales correctly */
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+
+/* Custom scrollbar for the horizontal analysis section */
+.horizontal-scroll-container {
+    overflow-x: auto;
+    /* Optional: Custom scrollbar track */
+    scrollbar-width: thin;
+    scrollbar-color: #10b981 #f3f4f6; 
+}
+
+.horizontal-scroll-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.horizontal-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #10b981; /* accent-green */
+    border-radius: 10px;
+}
+
+.horizontal-scroll-container::-webkit-scrollbar-track {
+    background-color: #e5e7eb; /* gray-200 */
+    border-radius: 10px;
+}
+
+/* ---------------------------------------------------- */
+/* 7. Hidden Utility Class */
+/* ---------------------------------------------------- */
+
+.hidden {
+    display: none !important;
+}

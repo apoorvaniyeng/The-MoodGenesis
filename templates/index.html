@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The MoodGenesis Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <script>
+        // Configure Tailwind to recognize custom colors/fonts
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#1e40af',
+                        'primary-dark': '#1f2937', 
+                        'secondary-light': '#f3f4f6', 
+                        'accent-green': '#10b981',
+                        'chat-user': '#3b82f6',
+                        'chat-llm': '#e5e7eb',
+                        'sidebar-bg': '#0f172a', 
+                        'golden-accent': '#daa520',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        'script': ['Caveat', 'cursive'], 
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-sans bg-secondary-light">
+
+    <div class="dashboard-grid">
+
+        <nav class="bg-sidebar-bg text-white shadow-xl pt-16 flex flex-col items-center space-y-8 lg:sticky lg:top-0">
+            <h1 class="mt-8 text-6xl font-script text-accent-green mb-8">&nbsp;&nbsp;MOOD<br>GENESIS</h1>
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Character Group Logo" class="w-33 h-auto mb-8 mx-auto" />
+            
+            <button onclick="switchView('analysis')" class="nav-item flex flex-col items-center p-3 rounded-xl hover:bg-slate-700 transition duration-150 active-nav-item">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="text-xs mt-1">Analysis</span>
+            </button>
+
+            <button onclick="switchView('chat')" class="nav-item flex flex-col items-center p-3 rounded-xl hover:bg-slate-700 transition duration-150">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 4v-4z"></path></svg>
+                <span class="text-xs mt-1">Chat</span>
+            </button>
+            
+            <button onclick="switchView('about')" class="nav-item flex flex-col items-center p-3 rounded-xl hover:bg-slate-700 transition duration-150">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-xs mt-1">About</span>
+            </button>
+            
+        </nav>
+
+        <main id="contentArea" class="p-4 md:p-8 space-y-8">
+            <header>
+                <h1 class="text-5xl font-script text-golden-accent">NARRATIVE STUDIO</h1>
+                <p class="text-md text-gray-600">Interact with your story's data across different functional views. For instructions, click on About in the Dashboard</p>
+            </header>
+
+            <div id="analysisView" class="space-y-6">
+
+                <section class="content-card space-y-6">
+                    
+                    <h2 class="text-2xl font-bold text-golden-accent flex items-center space-x-2 border-b pb-4">
+                        <svg class="w-6 h-6 text-golden-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <span>Step 1: Acquire Source Text</span>
+                    </h2>
+
+                    <div class="space-y-3">
+                        <p class="text-sm text-gray-600">Option A: Search for an excerpt from a classic novel.</p>
+                        <div class="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
+                            <input id="bookTitleInput" type="text" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-accent-green focus:border-accent-green transition duration-150" placeholder="e.g., Chapter 12 of Jane Eyre">
+                            <button id="findSummaryButton" onclick="findBookSummary()" class="px-6 py-3 text-white font-bold rounded-xl bg-accent-green hover:bg-green-700 disabled:opacity-50 transition duration-200">
+                                Find Text
+                            </button>
+                        </div>
+                        <div id="searchStatusMessage" class="text-sm text-gray-500 font-medium pt-2"></div>
+                    </div>
+                    
+                    <div id="summaryOutput" class="mt-4 border-t pt-4 hidden">
+                        <textarea id="summaryTextarea" rows="8" readonly class="w-full p-3 border border-gray-200 rounded-lg bg-secondary-light"></textarea>
+                        <button onclick="copySummaryToInput()" class="w-full mt-2 px-6 py-2 bg-yellow-500 text-white font-extrabold rounded-lg hover:bg-yellow-600 transition duration-200">
+                            Copy Text to Analysis Input ⬇️
+                        </button>
+                    </div>
+
+                    <div class="space-y-4 pt-6 border-t">
+                        <h2 class="text-2xl font-bold text-golden-accent">Step 2: Analysis Input</h2>
+                        <p class="text-sm text-gray-600">Option B: Paste your own story draft below, or use the text acquired above.</p>
+                        <textarea id="storyInput" rows="8" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-blue focus:border-primary-blue transition duration-150" placeholder="Paste your story here..."></textarea>
+                        
+                        <div class="mt-4">
+                            <button id="analyzeButton" onclick="handleAnalysis()" class="w-full px-6 py-3 bg-primary-blue text-white text-lg font-bold rounded-xl shadow-lg hover:bg-blue-700 disabled:opacity-50 transition duration-200">
+                                Analyze Plot Arc
+                            </button>
+                        </div>
+                        <div id="statusMessage" class="text-sm text-gray-500 font-medium text-right mt-2"></div>
+                    </div>
+
+                </section>
+
+                <div class="lg:grid lg:grid-cols-3 lg:gap-6">
+                    
+                    <div class="lg:col-span-2 space-y-6">
+                        <section class="content-card p-4">
+                            <h2 class="text-2xl font-bold text-primary-dark mb-4">Story Tension Map</h2>
+                            <div class="chart-container">
+                                <canvas id="tensionChart"></canvas>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="lg:col-span-1 space-y-6">
+                           <section class="content-card">
+                               <h2 class="text-xl font-bold text-primary-dark mb-4 border-b pb-2">Analysis Progression</h2>
+                               <div id="analysisOutputSummary" class="text-sm text-gray-500">
+                                   <p>Detailed metric cards will appear in a horizontal scroll below.</p>
+                                   <p class="pt-4 font-semibold text-primary-dark">Scroll down to view 4D Analysis.</p>
+                               </div>
+                           </section>
+                    </div>
+
+                </div>
+
+                <section class="content-card">
+                    <h2 class="text-2xl font-bold text-primary-dark mb-4">4D Analysis Progression</h2>
+                    <div class="overflow-x-auto horizontal-scroll-container pb-4">
+                        <div id="analysisOutput" class="flex space-x-4 min-w-max">
+                            <p class="text-center text-gray-500 italic p-4">Analysis results will appear here horizontally after processing.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <div id="chatView" class="hidden">
+                <section class="content-card w-full h-full space-y-6">
+                    <h2 class="text-2xl font-bold text-primary-dark flex items-center space-x-2 border-b pb-4">
+                        <svg class="w-7 h-7 text-primary-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 4v-4z"></path></svg>
+                        <span>Character Conversation Sandbox</span>
+                    </h2>
+
+                    <div id="characterSlots" class="flex flex-wrap border p-3 rounded-lg bg-secondary-light">
+                        <p class="text-sm text-gray-500 italic">Character tabs will appear here after a successful **Plot Analysis**.</p>
+                    </div>
+                    
+                    <div id="characterProfileContent" class="p-4 bg-white border border-gray-300 rounded-lg shadow-inner min-h-24">
+                        <p class="text-center text-sm text-gray-500 italic">Select a character tab above to view their detailed profile and begin chatting.</p>
+                    </div>
+
+
+                    <div class="chat-area-height overflow-y-auto p-4 bg-white border border-gray-300 rounded-lg shadow-inner flex flex-col justify-end" id="chatOutput">
+                        <p class="text-center text-sm text-gray-500 italic">Chat mode is currently disabled. Please go to the **Analysis** view and run a successful plot analysis to enable conversation with your story's characters.</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <input id="chatInput" type="text" disabled class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-chat-user focus:border-chat-user transition duration-150 disabled:bg-gray-100" placeholder="Disabled until analysis is complete...">
+                        <button id="sendChatButton" disabled onclick="handleChat()" class="px-6 py-2 bg-chat-user text-white font-bold rounded-lg hover:bg-blue-600 disabled:opacity-50 transition duration-200">
+                            Send
+                        </button>
+                    </div>
+                    <div id="chatStatusMessage" class="text-sm text-gray-500 font-medium pt-2"></div>
+                </section>
+            </div>
+            
+            <div id="aboutView" class="space-y-6 hidden">
+                <section class="content-card space-y-6">
+                    <h2 class="text-3xl font-bold text-primary-dark border-b pb-4 mb-4">MoodGenesis: Story Analysis Dashboard</h2>
+
+                    <p class="text-lg text-gray-700">
+                        MoodGenesis is an analytical tool that uses advanced natural language processing to reveal the emotional and structural **'DNA'** of narrative text. By analyzing novel excerpts, we provide a **Tension Map** and enable dynamic **Character Conversations**.
+                    </p>
+
+                    <h3 class="text-2xl font-semibold text-accent-green pt-4 border-t">How to Use the Dashboard</h3>
+                    <ol class="list-decimal list-inside text-gray-700 space-y-4 ml-4">
+                        <li>
+                            ACQUIRE SOURCE TEXT: In the **Analysis** view (Step 1), either search for an excerpt from a classic novel or paste your own story text into the input box below (Step 2).
+                        </li>
+                        <li>
+                            ANALYZE: Click the **"Analyze Plot Arc"** button. The system processes the text, generating emotional metrics across the entire excerpt.
+                        </li>
+                        <li>
+                            STORY TENSION MAP: View the **Story Tension Map** chart to see the overall emotional flow, and scroll down to the **4D Analysis Progression** for detailed metric cards on each segment.
+                        </li>
+                        <li>
+                            CHAT WITH THE CHARACTERS: Switch to the **Chat** view. Once analysis is complete, character tabs will appear, allowing you to converse with the AI models embodying your story's characters based on the text provided.
+                        </li>
+                    </ol>
+
+                    <h3 class="text-2xl font-semibold text-accent-green pt-4 border-t">About the Logo</h3>
+                    <div class="flex items-center space-x-4">
+                        <img src="{{ url_for('static', filename='logo.png') }}" alt="MoodGenesis Logo" class="w-16 h-auto rounded-full shadow-lg"/>
+                        <p class="text-gray-700">
+                            The visual logo represents the **genesis** of emotion and narrative, showing character silhouettes swirling within a cosmic sphere of color—the **mood** and energy that powers every great story.
+                        </p>
+                    </div>
+                </section>
+            </div>
+            
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
+</body>
+</html>
